@@ -38,14 +38,13 @@ export interface WizardFormData {
   q7a: string | null;
   q7b: string | null;
   q7bInputVal: string;
-  q7c: string;
   // Block 8
   addon_twee_videos: boolean;
   q8a: DayTimeValue;
   q8b: DayTimeValue;
-  q8c: [string, string, string];
-  q8cNotes: string;
-  q8d: string;
+  q8c_days: string[];
+  q8c_dagdeel: string | null;
+  q8c_notes: string;
 }
 
 export const INITIAL_FORM_DATA: WizardFormData = {
@@ -55,12 +54,13 @@ export const INITIAL_FORM_DATA: WizardFormData = {
   q4a: [], q4b: [], q4c: '',
   q5a: [], q5b: '',
   q6a: [], q6b: {}, q6c: '',
-  q7a: null, q7b: null, q7bInputVal: '', q7c: '',
+  q7a: null, q7b: null, q7bInputVal: '',
   addon_twee_videos: false,
   q8a: { day: null, time: null },
   q8b: { day: null, time: null },
-  q8c: ['', '', ''],
-  q8cNotes: '', q8d: '',
+  q8c_days: [],
+  q8c_dagdeel: null,
+  q8c_notes: '',
 };
 
 // ─── Zod block schemas ───────────────────────────────────────────
@@ -71,7 +71,7 @@ export const block1Schema = z.object({
   whatsapp: z
     .string()
     .min(1, 'Vul een WhatsApp nummer in.')
-    .regex(/^\+\d{10}$/, 'WhatsApp nummer moet beginnen met + gevolgd door exact 10 cijfers, bijv. +31612345678.'),
+    .regex(/^\+\d{11}$/, 'WhatsApp nummer moet beginnen met + gevolgd door exact 11 cijfers, bijv. +31612345678.'),
   address: z.string().min(1, 'Vul het straat en huisnummer in.'),
   city: z.string().min(1, 'Vul de plaatsnaam in.'),
   website: z.string().optional(),
@@ -116,7 +116,6 @@ export const block7Schema = z.object({
   q7a: z.string({ required_error: 'Geef aan of jullie een huisstijl hebben.' }).min(1),
   q7b: z.string().nullable().optional(),
   q7bInputVal: z.string().optional(),
-  q7c: z.string().optional(),
 });
 export type Block7Data = z.infer<typeof block7Schema>;
 
@@ -128,10 +127,9 @@ const dayTimeSchema = z.object({
 export const block8Schema = z.object({
   q8a: dayTimeSchema.refine(v => v.day !== null, { message: 'Kies een dag voor de wekelijkse video.' })
     .refine(v => v.time !== null, { message: 'Kies een tijdstip voor de wekelijkse video.' }),
-  q8c: z.tuple([z.string(), z.string(), z.string()])
-    .refine(v => v[0].length > 0, { message: 'Kies minimaal één voorkeursdatum voor de shoot.' }),
-  q8cNotes: z.string().optional(),
-  q8d: z.string().optional(),
+  q8c_days: z.array(z.string()).min(1, 'Kies minimaal één dag waarop wij kunnen langskomen.'),
+  q8c_dagdeel: z.string({ required_error: 'Kies een dagdeel voor de shoot.' }).min(1, 'Kies een dagdeel voor de shoot.'),
+  q8c_notes: z.string().optional(),
 });
 export type Block8Data = z.infer<typeof block8Schema>;
 

@@ -8,7 +8,16 @@
       "Bash(npm install *)",
       "Bash(npm run *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/onboarding)",
-      "Bash(kill %1)"
+      "Bash(kill %1)",
+      "Bash(curl -s http://localhost:3000/onboarding -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:3000/ -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:3001/onboarding -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(curl -L -s http://localhost:3001/onboarding -o /tmp/onboarding_response.html -w \"%{http_code}\\\\n\")",
+      "Bash(curl -s -X POST http://localhost:3001/api/submit -H 'Content-Type: application/json' -d '{\"restaurantName\":\"Test\",\"contactName\":\"Test\",\"whatsapp\":\"+31612345678\",\"address\":\"Straat 1\",\"city\":\"Amsterdam\",\"website\":\"\",\"step2a\":\"eten\",\"step2b\":\"bistro\",\"step2c\":[],\"q3a\":[\"Buurtbewoners\"],\"q3b\":[\"De sfeer\"],\"q3c\":[\"Diner weekend\"],\"q4a\":[\"De eerlijke keuken\"],\"q4b\":[\"Gezellig en toegankelijk\"],\"q4c\":\"\",\"q5a\":[\"De gerechten van de dag\"],\"q5b\":\"\",\"q6a\":[\"Terras opening in het voorjaar\"],\"q6b\":{},\"q6c\":\"\",\"q7a\":\"nee\",\"q7b\":null,\"q7bInputVal\":\"\",\"addon_twee_videos\":false,\"q8a\":{\"day\":\"Donderdag\",\"time\":\"17:00\"},\"q8b\":{\"day\":null,\"time\":null},\"q8c_days\":[\"Woensdag\"],\"q8c_dagdeel\":\"middag\",\"q8c_notes\":\"\",\"q8d\":\"\"}' -w '\\\\nHTTP: %{http_code}\\\\n')",
+      "Bash(pkill -f \"next dev\")",
+      "Read(//tmp/**)",
+      "Bash(curl -s http://localhost:3000/onboarding -w \"\\\\nHTTP: %{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:3000/ -w \"\\\\nHTTP: %{http_code}\\\\n\")"
     ]
   }
 }

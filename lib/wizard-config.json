@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Tripl3Frame Onboarding Wizard",
+    "title": "Onboardingformulier",
     "version": "1.0",
     "estimatedMinutes": 18,
     "language": "nl"
@@ -1069,7 +1069,7 @@
           "type": "textarea",
           "required": false,
           "skippable": true,
-          "placeholder": "Bijv: elk jaar een pannenkoekenrace op de laatste dag van de zomervakantie"
+          "placeholder": "Bijv: elk jaar een speciale leveranciersavond, een vast seizoensevent of een traditie met vaste gasten"
         }
       ]
     },
@@ -1142,14 +1142,6 @@
               }
             }
           ]
-        },
-        {
-          "id": "q7c",
-          "label": "Zijn er restaurants of merken waarvan jullie de visuele stijl bewonderen?",
-          "type": "textarea",
-          "required": false,
-          "skippable": true,
-          "placeholder": "Optioneel — vrij invullen"
         }
       ]
     },
@@ -1164,7 +1156,7 @@
           "label": "Op welke dag en tijdstip wil je je wekelijkse video ontvangen via WhatsApp?",
           "type": "day_time_select",
           "required": true,
-          "hint": "Veel restaurants posten graag op donderdag of vrijdag voor het weekend. Maar kies wat voor jullie het beste werkt.",
+          "hint": "Kies een moment waarop jij even tijd hebt om de video te bekijken en te delen. Tip: donderdag of vrijdag werkt goed — mensen plannen hun weekend en zijn ontvankelijk voor uitjes en reserveringen.",
           "days": [
             "Maandag", "Dinsdag", "Woensdag", "Donderdag",
             "Vrijdag", "Zaterdag", "Zondag"
@@ -1199,26 +1191,44 @@
           ]
         },
         {
-          "id": "q8c",
-          "label": "Wanneer kunnen wij langskomen voor de shoot?",
-          "type": "date_picker_multi",
+          "id": "q8c_days",
+          "label": "Welke dagen van de week kunnen wij het beste langskomen?",
+          "type": "multi_select",
           "required": true,
-          "count": 3,
-          "labels": ["Voorkeur 1", "Voorkeur 2", "Voorkeur 3"],
-          "hint": "Kies een dag waarop jullie open zijn. Idealiter een rustig moment, overdag voor het mooiste licht.",
-          "notesField": {
-            "label": "Is er iets bijzonders op die dag?",
-            "placeholder": "Bijv: woensdagmiddag is rustig of chef is er alleen op dinsdag",
-            "required": false
-          }
+          "options": [
+            "Maandag", "Dinsdag", "Woensdag", "Donderdag",
+            "Vrijdag", "Zaterdag", "Zondag"
+          ]
         },
         {
-          "id": "q8d",
-          "label": "Nog iets wat we moeten weten?",
+          "id": "q8c_dagdeel",
+          "label": "Welk dagdeel past het beste?",
+          "type": "single_select",
+          "required": true,
+          "options": [
+            {
+              "value": "middag",
+              "label": "Middag",
+              "description": "Daglicht, gerechten, interieur op zijn best"
+            },
+            {
+              "value": "avond",
+              "label": "Avond",
+              "description": "Sfeer, kaarslicht, volle zaal"
+            },
+            {
+              "value": "middag_avond",
+              "label": "Middag + Avond",
+              "description": "Aanbevolen voor een complete shoot — in de winter slim te combineren vanaf 15:00"
+            }
+          ]
+        },
+        {
+          "id": "q8c_notes",
+          "label": "Is er iets wat we moeten weten voordat we beginnen?",
           "type": "textarea",
           "required": false,
-          "skippable": true,
-          "placeholder": "Bijzonderheden, specifieke wensen, of iets wat je eerder niet kwijt kon."
+          "placeholder": "Bijv: chef is er alleen op dinsdag, zaterdagavond is te druk, bepaald personeel filmt liever niet mee."
         }
       ]
     }

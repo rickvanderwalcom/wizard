@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Tripl3Frame Onboarding',
-  description: 'Onboarding wizard voor Tripl3Frame restaurantklanten',
+  title: 'Onboardingformulier',
+  description: 'Onboardingformulier voor nieuwe restaurantklanten',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

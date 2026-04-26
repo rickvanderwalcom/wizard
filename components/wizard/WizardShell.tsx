@@ -497,7 +497,7 @@ function Block7({ data, onNext, onPrev }: {
 }) {
   const { control, handleSubmit, watch, setValue, formState: { errors } } = useForm<Block7Data>({
     resolver: zodResolver(block7Schema),
-    defaultValues: { q7a: data.q7a ?? undefined, q7b: data.q7b, q7bInputVal: data.q7bInputVal, q7c: data.q7c },
+    defaultValues: { q7a: data.q7a ?? undefined, q7b: data.q7b, q7bInputVal: data.q7bInputVal },
   });
 
   const q7a = watch('q7a');
@@ -506,8 +506,6 @@ function Block7({ data, onNext, onPrev }: {
   const b = cfg.blocks[6];
   const q7aConfig = b.questions![0];
   const q7bConfig = b.questions![1];
-  const q7cConfig = b.questions![2];
-
   const selOpt7b = (q7bConfig.options as OptionConfig[]).find(o => o.value === q7b);
   const firstError = errors.q7a?.message;
 
@@ -580,21 +578,6 @@ function Block7({ data, onNext, onPrev }: {
         </>
       )}
 
-      <Divider />
-
-      <Controller
-        name="q7c"
-        control={control}
-        render={({ field }) => (
-          <TextareaField
-            label={`${q7cConfig.label} (optioneel)`}
-            placeholder={q7cConfig.placeholder}
-            value={field.value || ''}
-            onChange={field.onChange}
-          />
-        )}
-      />
-
       {firstError && <ErrorBanner message={firstError} />}
       <NavButtons block={6} total={8} onPrev={onPrev} onNext={() => {}} onSubmit={() => {}} />
     </form>
@@ -609,19 +592,26 @@ function Block8({ data, onNext, onPrev, isSubmitting }: {
 }) {
   const { control, handleSubmit, formState: { errors } } = useForm<Block8Data>({
     resolver: zodResolver(block8Schema),
-    defaultValues: { q8a: data.q8a, q8c: data.q8c, q8cNotes: data.q8cNotes, q8d: data.q8d },
+    defaultValues: {
+      q8a: data.q8a,
+      q8c_days: data.q8c_days,
+      q8c_dagdeel: data.q8c_dagdeel ?? undefined,
+      q8c_notes: data.q8c_notes,
+    },
   });
 
   const b = cfg.blocks[7];
   const q8aConfig = b.questions![0];
-  const q8cConfig = b.questions![2];
-  const q8dConfig = b.questions![3];
+  const q8cDaysConfig = b.questions![2];
+  const q8cDagdeelConfig = b.questions![3];
+  const q8cNotesConfig = b.questions![4];
 
   const q8aError = (errors.q8a as { message?: string })?.message
     || (errors.q8a as { day?: { message?: string } })?.day?.message
     || (errors.q8a as { time?: { message?: string } })?.time?.message;
-  const q8cError = (errors.q8c as { message?: string })?.message;
-  const firstError = q8aError || q8cError;
+  const firstError = q8aError
+    || errors.q8c_days?.message
+    || (errors.q8c_dagdeel as { message?: string })?.message;
 
   return (
     <form onSubmit={handleSubmit(d => onNext(d))} noValidate>
@@ -643,41 +633,43 @@ function Block8({ data, onNext, onPrev, isSubmitting }: {
 
       <Divider />
 
-      <SectionLabel label={q8cConfig.label} required />
+      <SectionLabel label={q8cDaysConfig.label} required />
       <Controller
-        name="q8c"
+        name="q8c_days"
         control={control}
         render={({ field }) => (
-          <DatePickerMulti
-            count={q8cConfig.count!}
-            labels={q8cConfig.labels!}
-            hint={q8cConfig.hint}
-            notesField={q8cConfig.notesField}
+          <MultiSelectCards
+            options={q8cDaysConfig.options as string[]}
             value={field.value}
-            onChange={field.onChange as (v: string[]) => void}
-            notesValue={data.q8cNotes}
-            onNotesChange={() => {}}
+            onChange={field.onChange}
           />
         )}
       />
 
+      <Divider />
+
+      <SectionLabel label={q8cDagdeelConfig.label} required />
       <Controller
-        name="q8cNotes"
+        name="q8c_dagdeel"
         control={control}
         render={({ field }) => (
-          <input type="hidden" value={field.value || ''} onChange={field.onChange} />
+          <SingleSelectCards
+            options={q8cDagdeelConfig.options as OptionConfig[]}
+            value={field.value ?? null}
+            onChange={field.onChange}
+          />
         )}
       />
 
       <Divider />
 
       <Controller
-        name="q8d"
+        name="q8c_notes"
         control={control}
         render={({ field }) => (
           <TextareaField
-            label={`${q8dConfig.label} (optioneel)`}
-            placeholder={q8dConfig.placeholder}
+            label={q8cNotesConfig.label}
+            placeholder={q8cNotesConfig.placeholder}
             value={field.value || ''}
             onChange={field.onChange}
           />
@@ -700,9 +692,11 @@ function Confirmation({ data }: { data: WizardFormData }) {
   };
   const postDay = dayLabels[data.q8a.day ?? ''] || '—';
   const postTime = data.q8a.time || '—';
-  const shootDate = data.q8c[0]
-    ? new Date(data.q8c[0]).toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-    : '—';
+  const dagdeelLabels: Record<string, string> = { middag: 'Middag', avond: 'Avond', middag_avond: 'Middag + Avond' };
+  const shootSummary = [
+    data.q8c_days.join(', ') || '—',
+    data.q8c_dagdeel ? `· ${dagdeelLabels[data.q8c_dagdeel] ?? data.q8c_dagdeel}` : '',
+  ].filter(Boolean).join(' ');
   const huisstijlActie = data.q7a === 'ja' && data.q7b === 'zelf';
 
   const steps = [
@@ -751,7 +745,7 @@ function Confirmation({ data }: { data: WizardFormData }) {
             { label: 'Restaurant', value: data.restaurantName || '—' },
             { label: 'Type', value: TYPE_LABELS[data.step2b ?? ''] ?? data.step2b ?? '—' },
             { label: 'Postdag', value: `${postDay} · ${postTime}`, capitalize: true },
-            { label: 'Shootdatum voorkeur', value: shootDate, capitalize: true },
+            { label: 'Shoot voorkeur', value: shootSummary },
           ].map(({ label, value, capitalize }) => (
             <div key={label}>
               <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '5px' }}>{label}</div>
@@ -857,7 +851,7 @@ export default function WizardShell() {
             <rect width="28" height="28" rx="5" fill={WC.green} />
             <path d="M7 9h14M7 14h9M7 19h11" stroke="white" strokeWidth="2" strokeLinecap="round" />
           </svg>
-          <span style={{ fontSize: '14px', fontWeight: '500', color: WC.green, letterSpacing: '0.02em' }}>Tripl3Frame</span>
+          <span style={{ fontSize: '14px', fontWeight: '500', color: WC.green, letterSpacing: '0.02em' }}>Onboardingformulier</span>
           <span style={{ fontSize: '13px', color: WC.textLight, marginLeft: 'auto' }}>~{cfg.meta.estimatedMinutes} min</span>
         </div>
 

@@ -31,10 +31,8 @@ function formatShootDate(d: string): string {
 
 export function buildJeffreyEmail(data: WizardFormData): string {
   const typeLabel = TYPE_LABELS[data.step2b ?? ''] ?? data.step2b ?? '—';
-  const shootDates = [data.q8c[0], data.q8c[1], data.q8c[2]]
-    .filter(Boolean)
-    .map((d, i) => `Voorkeur ${i + 1}: ${formatShootDate(d)}`)
-    .join('<br>');
+  const dagdeelLabels: Record<string, string> = { middag: 'Middag', avond: 'Avond', middag_avond: 'Middag + Avond' };
+  const shootDagdeel = data.q8c_dagdeel ? dagdeelLabels[data.q8c_dagdeel] ?? data.q8c_dagdeel : '—';
 
   const huisstijlValue = (() => {
     if (data.q7a === 'nee') return 'Nee / niet zeker';
@@ -101,19 +99,18 @@ export function buildJeffreyEmail(data: WizardFormData): string {
 
       ${section('Huisstijl', [
         fmt('Huisstijl status', huisstijlValue),
-        data.q7c ? fmt('Stijlinspiratie', data.q7c) : '',
       ].join(''))}
 
       ${section('Planning', [
         fmt('Postdag & tijdstip', `${data.q8a.day ?? '—'} om ${data.q8a.time ?? '—'}`),
-        fmt('Shootdatums', shootDates || '—'),
-        data.q8cNotes ? fmt('Bijzonderheden shoot', data.q8cNotes) : '',
-        data.q8d ? fmt('Overige opmerkingen', data.q8d) : '',
+        fmt('Shoot voorkeursdagen', data.q8c_days.join(', ') || '—'),
+        fmt('Shoot dagdeel', shootDagdeel),
+        data.q8c_notes ? fmt('Bijzonderheden shoot', data.q8c_notes) : '',
       ].join(''))}
 
     </div>
     <div style="background:#f9f9f9;padding:20px 36px;border-top:1px solid #eee;font-size:12px;color:#999">
-      Verstuurd via Tripl3Frame Onboarding Wizard
+      Verstuurd via Onboardingformulier
     </div>
   </div>
 </body>
@@ -123,7 +120,11 @@ export function buildJeffreyEmail(data: WizardFormData): string {
 export function buildHuisstijlEmail(data: WizardFormData): string {
   const designerEmail = data.q7bInputVal || '(niet ingevuld)';
   const source = data.q7b === 'vormgever' ? 'vormgever/bureau' : 'websitebouwer';
-  const shootDate = data.q8c[0] ? formatShootDate(data.q8c[0]) : '(nog niet gepland)';
+  const dagdeelLabelsH: Record<string, string> = { middag: 'Middag', avond: 'Avond', middag_avond: 'Middag + Avond' };
+  const shootInfo = [
+    data.q8c_days.join(', ') || '—',
+    data.q8c_dagdeel ? `(${dagdeelLabelsH[data.q8c_dagdeel] ?? data.q8c_dagdeel})` : '',
+  ].filter(Boolean).join(' ');
 
   return `<!DOCTYPE html>
 <html lang="nl">
@@ -143,7 +144,7 @@ export function buildHuisstijlEmail(data: WizardFormData): string {
         ${fmt('Restaurant', data.restaurantName)}
         ${fmt('Contactpersoon', data.contactName)}
         ${fmt('WhatsApp', data.whatsapp)}
-        ${fmt('Shoot voorkeur 1', shootDate)}
+        ${fmt('Shoot voorkeursdagen', shootInfo)}
       </table>
       <p style="font-size:14px;color:#666;line-height:1.6;margin-top:24px;padding-top:16px;border-top:1px solid #eee">
         Neem contact op met de ${source} om de huisstijl bestanden op te vragen vóór de shoot.
@@ -167,71 +168,68 @@ function formatTop3(items: string[]): string {
 export function generateOnboardingMarkdown(data: WizardFormData): string {
   const lines: string[] = [];
   const typeLabel = TYPE_LABELS[data.step2b ?? ''] ?? data.step2b ?? '—';
+  const q = (label: string, value: string) => { lines.push(`\n**${label}**\n${value}`); };
 
   lines.push(`# Onboarding — ${data.restaurantName}`);
   lines.push(`\nGegenereerd: ${new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}`);
 
   lines.push(`\n## Basisgegevens`);
-  lines.push(`- Restaurant: ${data.restaurantName}`);
-  lines.push(`- Contact: ${data.contactName}`);
-  lines.push(`- WhatsApp: ${data.whatsapp}`);
-  lines.push(`- Adres: ${data.address}, ${data.city}`);
-  if (data.website) lines.push(`- Website: ${data.website}`);
+  q('Naam van het restaurant', data.restaurantName);
+  q('Jouw naam', data.contactName);
+  q('WhatsApp nummer', data.whatsapp);
+  q('Straat + huisnummer', `${data.address}, ${data.city}`);
+  if (data.website) q('Website', data.website);
 
-  lines.push(`\n## Type`);
-  lines.push(`- Hoofdfocus: ${data.step2a ?? '—'}`);
-  lines.push(`- Type: ${typeLabel}`);
-  if (data.step2c?.length) lines.push(`- Subtags: ${data.step2c.join(', ')}`);
+  lines.push(`\n## Type zaak`);
+  q('Waar draait jouw zaak primair om?', data.step2a ?? '—');
+  q('Wat past het beste bij jouw formule?', typeLabel);
+  if (data.step2c?.length) q('Voeg toe wat extra van toepassing is.', data.step2c.join(', '));
 
   lines.push(`\n## Gast`);
-  lines.push(`- Typische gast: ${formatTop3(data.q3a)}`);
-  lines.push(`- Waarom zij: ${formatTop3(data.q3b)}`);
-  lines.push(`- Momenten: ${data.q3c.join(', ')}`);
+  q('Wie is jullie typische gast?', formatTop3(data.q3a));
+  q('Waarom komen gasten bij jullie en niet bij de concurrent?', formatTop3(data.q3b));
+  q('Wanneer bezoeken gasten jullie?', data.q3c.join(', '));
 
   lines.push(`\n## Identiteit`);
-  lines.push(`- Grootste trots: ${formatTop3(data.q4a)}`);
-  lines.push(`- Uitstraling: ${formatTop3(data.q4b)}`);
-  if (data.q4c) lines.push(`- Verhaal & gastcomplimenten:\n  ${data.q4c}`);
+  q('Wat is jullie grootste trots?', formatTop3(data.q4a));
+  q('Hoe willen jullie overkomen op social media?', formatTop3(data.q4b));
+  if (data.q4c) q('Vertel ons iets over jullie restaurant', data.q4c);
 
   lines.push(`\n## Content prioriteiten`);
-  lines.push(`- Tonen: ${formatTop3(data.q5a)}`);
-  if (data.q5b) lines.push(`- Niet tonen: ${data.q5b}`);
+  q('Wat willen jullie het liefst laten zien op social media?', formatTop3(data.q5a));
+  if (data.q5b) q('Is er iets wat jullie liever NIET laten zien?', data.q5b);
 
-  lines.push(`\n## Seizoenen`);
-  lines.push(`- Cruciale momenten: ${formatTop3(data.q6a)}`);
+  lines.push(`\n## Seizoenen en momenten`);
+  q('Welke momenten in het jaar zijn cruciaal voor jullie zaak?', formatTop3(data.q6a));
   if (data.q6b) {
     const druk = Object.entries(data.q6b).filter(([, v]) => v === 'druk').map(([k]) => k).join(', ');
     const rustig = Object.entries(data.q6b).filter(([, v]) => v === 'rustig').map(([k]) => k).join(', ');
-    if (druk) lines.push(`- Drukste maanden: ${druk}`);
-    if (rustig) lines.push(`- Rustigste maanden: ${rustig}`);
+    const maanden = [druk && `Druk: ${druk}`, rustig && `Rustig: ${rustig}`].filter(Boolean).join('\n');
+    if (maanden) q('Wanneer zijn jullie het drukst en wanneer het rustigst?', maanden);
   }
-  if (data.q6c) lines.push(`- Eigen momenten: ${data.q6c}`);
+  if (data.q6c) q('Hebben jullie jaarlijks terugkerende momenten die jullie eigen zijn?', data.q6c);
 
   lines.push(`\n## Huisstijl`);
-  if (data.q7a === 'nee') {
-    lines.push(`- Status: Geen huisstijl — Tripl3Frame bouwt op basis van type`);
-  } else {
-    if (data.q7b === 'zelf') {
-      lines.push(`- Status: Eigenaar stuurt bestanden naar huisstijl@tripl3frame.nl`);
-    } else if (data.q7b === 'vormgever') {
-      lines.push(`- Status: Vormgever — ${data.q7bInputVal || '(geen email ingevuld)'}`);
-    } else if (data.q7b === 'websitebouwer') {
-      lines.push(`- Status: Websitebouwer — ${data.q7bInputVal || '(geen email ingevuld)'}`);
-    } else if (data.q7b === 'weet_niet') {
-      lines.push(`- Status: Onbekend — haal op via ${data.q7bInputVal || '(geen website ingevuld)'}`);
-    } else {
-      lines.push(`- Status: Ja (geen verdere keuze gemaakt)`);
-    }
+  q('Hebben jullie een logo en huisstijl?', data.q7a === 'ja' ? 'Ja' : 'Nee / niet zeker');
+  if (data.q7a === 'ja') {
+    const huisstijlDetail = (() => {
+      if (data.q7b === 'zelf') return 'Eigenaar stuurt bestanden naar huisstijl@tripl3frame.nl';
+      if (data.q7b === 'vormgever') return `Vormgever / bureau — ${data.q7bInputVal || '(geen email ingevuld)'}`;
+      if (data.q7b === 'websitebouwer') return `Websitebouwer — ${data.q7bInputVal || '(geen email ingevuld)'}`;
+      if (data.q7b === 'weet_niet') return `Onbekend — haal op via ${data.q7bInputVal || '(geen website ingevuld)'}`;
+      return 'Ja (geen verdere keuze gemaakt)';
+    })();
+    q('Wie heeft jullie huisstijl bestanden?', huisstijlDetail);
   }
-  if (data.q7c) lines.push(`- Visuele inspiratie: ${data.q7c}`);
 
   lines.push(`\n## Planning`);
-  lines.push(`- Postdag: ${data.q8a.day ?? '—'} om ${data.q8a.time ?? '—'}`);
-  lines.push(`- Shootvoorkeur 1: ${data.q8c[0] ? formatShootDate(data.q8c[0]) : '—'}`);
-  if (data.q8c[1]) lines.push(`- Shootvoorkeur 2: ${formatShootDate(data.q8c[1])}`);
-  if (data.q8c[2]) lines.push(`- Shootvoorkeur 3: ${formatShootDate(data.q8c[2])}`);
-  if (data.q8cNotes) lines.push(`- Bijzonderheden shoot: ${data.q8cNotes}`);
-  if (data.q8d) lines.push(`- Laatste opmerkingen: ${data.q8d}`);
+  q('Op welke dag en tijdstip wil je je wekelijkse video ontvangen via WhatsApp?', `${data.q8a.day ?? '—'} om ${data.q8a.time ?? '—'}`);
+  q('Welke dagen van de week kunnen wij het beste langskomen?', data.q8c_days.join(', ') || '—');
+  if (data.q8c_dagdeel) {
+    const dagdeelLabels: Record<string, string> = { middag: 'Middag', avond: 'Avond', middag_avond: 'Middag + Avond' };
+    q('Welk dagdeel past het beste?', dagdeelLabels[data.q8c_dagdeel] ?? data.q8c_dagdeel);
+  }
+  if (data.q8c_notes) q('Is er iets wat we moeten weten voordat we beginnen?', data.q8c_notes);
 
   return lines.join('\n');
 }
