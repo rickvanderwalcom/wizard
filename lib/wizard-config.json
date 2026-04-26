@@ -1,0 +1,1282 @@
+{
+  "meta": {
+    "title": "Tripl3Frame Onboarding Wizard",
+    "version": "1.0",
+    "estimatedMinutes": 18,
+    "language": "nl"
+  },
+
+  "blocks": [
+    {
+      "id": "block1",
+      "title": "Basisinformatie",
+      "subtitle": "Vijf velden, dan beginnen we.",
+      "fields": [
+        {
+          "id": "restaurantName",
+          "label": "Naam van het restaurant",
+          "type": "text",
+          "required": true,
+          "placeholder": "bijv. De Gouden Vork"
+        },
+        {
+          "id": "contactName",
+          "label": "Jouw naam",
+          "type": "text",
+          "required": true,
+          "placeholder": "Eigenaar of manager"
+        },
+        {
+          "id": "whatsapp",
+          "label": "WhatsApp nummer",
+          "type": "tel",
+          "required": true,
+          "placeholder": "+31612345678",
+          "note": "Dit wordt het hoofdnummer in ons systeem"
+        },
+        {
+          "id": "address",
+          "label": "Straat + huisnummer",
+          "type": "text",
+          "required": true,
+          "placeholder": "bijv. Kerkstraat 12"
+        },
+        {
+          "id": "city",
+          "label": "Plaats",
+          "type": "text",
+          "required": true,
+          "placeholder": "bijv. Amsterdam"
+        },
+        {
+          "id": "website",
+          "label": "Website",
+          "type": "url",
+          "required": false,
+          "placeholder": "www.jullierestarant.nl"
+        }
+      ]
+    },
+
+    {
+      "id": "block2",
+      "title": "Jullie type zaak",
+      "subtitle": "Dit bepaalt hoe de rest van de wizard eruitziet.",
+      "steps": [
+        {
+          "id": "step2a",
+          "question": "Waar draait jouw zaak primair om?",
+          "hint": "Twijfel je? Kies waar je meeste omzet vandaan komt.",
+          "type": "single_select",
+          "required": true,
+          "options": [
+            {
+              "value": "eten",
+              "label": "Eten staat centraal",
+              "description": "Gasten komen primair voor een maaltijd"
+            },
+            {
+              "value": "drinken",
+              "label": "Drinken staat centraal",
+              "description": "Gasten komen voor een drankje, borrel of cocktail"
+            },
+            {
+              "value": "overdag",
+              "label": "Overdag en lunch",
+              "description": "Jij bent er voor de dagmens — koffie, lunch, brunch"
+            },
+            {
+              "value": "snel",
+              "label": "Snel en toegankelijk",
+              "description": "Gasten bestellen snel en verblijven kort"
+            },
+            {
+              "value": "beleving",
+              "label": "Beleving en thema",
+              "description": "Het concept of de ervaring is het product"
+            }
+          ]
+        },
+        {
+          "id": "step2b",
+          "question": "Wat past het beste bij jouw formule?",
+          "type": "single_select",
+          "required": true,
+          "conditionalOn": "step2a",
+          "optionsByParent": {
+            "eten": [
+              {
+                "value": "gastronomisch",
+                "label": "Gastronomisch restaurant",
+                "description": "Chef-gedreven, seizoensmenu, culinaire filosofie centraal. Inclusief Michelin.",
+                "guardrail": {
+                  "checks": [
+                    "Chef-gedreven concept",
+                    "Seizoensmenu of vaste menustructuur zonder à la carte",
+                    "Culinaire filosofie centraal",
+                    "Erkend of strevend naar gastronomische erkenning"
+                  ],
+                  "fallbackHint": "Misschien past Fine dining of Bistro beter?"
+                }
+              },
+              {
+                "value": "fine_dining",
+                "label": "Fine dining",
+                "description": "Hoog prijsniveau, reserveringen, culinair profiel voorop",
+                "guardrail": {
+                  "checks": [
+                    "Primair op reservering",
+                    "Avondgericht",
+                    "Hoofdgerecht boven €30",
+                    "Uitgebreide bediening en menustructuur"
+                  ],
+                  "fallbackHint": "Misschien past Bistro of Brasserie beter?"
+                }
+              },
+              {
+                "value": "bistro",
+                "label": "Bistro",
+                "description": "Informeel, compacte kaart, toegankelijk"
+              },
+              {
+                "value": "brasserie",
+                "label": "Brasserie",
+                "description": "Brede kaart, lang open, mix van eten en drinken"
+              },
+              {
+                "value": "pannenkoeken",
+                "label": "Pannenkoeken / crêpes",
+                "description": "Pannenkoeken of crêpes zijn het kernproduct"
+              },
+              {
+                "value": "thema_eten",
+                "label": "Themarestaurant",
+                "description": "Concept of decor weegt zwaarder dan de klassieke restaurantvorm"
+              },
+              {
+                "value": "anders_eten",
+                "label": "Anders",
+                "description": ""
+              }
+            ],
+            "drinken": [
+              {
+                "value": "cafe",
+                "label": "Café",
+                "description": "Sociale ontmoeting, drank is de kern, eten aanvullend"
+              },
+              {
+                "value": "bar",
+                "label": "Bar",
+                "description": "Cocktails, wijn of spirits centraal, maaltijd ondergeschikt"
+              },
+              {
+                "value": "wijnbar",
+                "label": "Wijnbar",
+                "description": "Wijn is het hoofdproduct, kleine gerechten ter ondersteuning"
+              },
+              {
+                "value": "anders_drinken",
+                "label": "Anders",
+                "description": ""
+              }
+            ],
+            "overdag": [
+              {
+                "value": "lunchroom",
+                "label": "Lunchroom",
+                "description": "Lichte maaltijden, broodjes, koffie, thee"
+              },
+              {
+                "value": "koffiehuis",
+                "label": "Koffiehuis / espressobar",
+                "description": "Koffie is het hoofdproduct, eten aanvullend"
+              },
+              {
+                "value": "brunch",
+                "label": "Brunchzaak",
+                "description": "Weekend brunch is jullie sterkste moment"
+              },
+              {
+                "value": "anders_overdag",
+                "label": "Anders",
+                "description": ""
+              }
+            ],
+            "snel": [
+              {
+                "value": "fast_casual",
+                "label": "Fast casual",
+                "description": "Bestellen aan balie of app, hogere kwaliteit dan fastfood"
+              },
+              {
+                "value": "afhaal",
+                "label": "Afhaal en bezorging",
+                "description": "Merendeel van de omzet is take-away of bezorging"
+              },
+              {
+                "value": "anders_snel",
+                "label": "Anders",
+                "description": ""
+              }
+            ],
+            "beleving": [
+              {
+                "value": "thema_beleving",
+                "label": "Themarestaurant",
+                "description": "Decor of niche-identiteit weegt zwaarder dan klassieke horecavorm"
+              },
+              {
+                "value": "dinner_experience",
+                "label": "Dinner experience",
+                "description": "Meergangendiner met show, performance of bijzondere beleving"
+              },
+              {
+                "value": "popup",
+                "label": "Pop-up / conceptzaak",
+                "description": "Tijdelijk of wisselend concept, exclusiviteit door schaarste"
+              },
+              {
+                "value": "anders_beleving",
+                "label": "Anders",
+                "description": ""
+              }
+            ]
+          }
+        },
+        {
+          "id": "step2c",
+          "question": "Voeg toe wat extra van toepassing is.",
+          "hint": "Kies maximaal 3.",
+          "type": "multi_select",
+          "required": false,
+          "maxSelect": 3,
+          "skippable": true,
+          "options": [
+            { "value": "terras", "label": "Groot terras" },
+            { "value": "seizoenszaak", "label": "Seizoenszaak" },
+            { "value": "familie", "label": "Familierestaurant" },
+            { "value": "kindvriendelijk", "label": "Kindvriendelijk" },
+            { "value": "allday", "label": "All-day open" },
+            { "value": "avondgericht", "label": "Avondgericht" },
+            { "value": "wijnspecialist", "label": "Wijnspecialist" },
+            { "value": "cocktailfocus", "label": "Cocktailfocus" },
+            { "value": "vegan", "label": "Veganistisch / vegetarisch" },
+            { "value": "duurzaam", "label": "Biologisch / duurzaam" },
+            { "value": "bezorging", "label": "Bezorging actief" },
+            { "value": "afhaal_tag", "label": "Afhaal actief" },
+            { "value": "private_dining", "label": "Feestzalen en private dining" },
+            { "value": "hondvriendelijk", "label": "Hondvriendelijk" },
+            { "value": "premium", "label": "Premium positionering" },
+            { "value": "buurt", "label": "Buurtrestaurant / stamkroeg" },
+            { "value": "toeristisch", "label": "Toeristische locatie" },
+            { "value": "livemuziek", "label": "Live muziek of entertainment" },
+            { "value": "overnachtingen", "label": "Overnachtingen (hotel-restaurant)" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "block3",
+      "title": "Jullie gast",
+      "subtitle": "Twee korte vragen. Wie komt er en waarom.",
+      "note": "Kies je top 3 — niet omdat de rest niet telt, maar dit helpt ons de juiste prioriteit te geven.",
+      "questions": [
+        {
+          "id": "q3a",
+          "label": "Wie is jullie typische gast?",
+          "type": "top3_select",
+          "required": true,
+          "maxSelect": 3,
+          "allowCustom": true,
+          "optionsByType": {
+            "gastronomisch": [
+              "Culinaire liefhebbers en fijnproevers",
+              "Zakelijke gasten en entertainment",
+              "Koppels voor een bijzondere avond",
+              "Internationale gasten en toeristen",
+              "Vaste gasten die terugkomen voor de chef"
+            ],
+            "fine_dining": [
+              "Koppels voor een romantische avond",
+              "Zakelijke diners en entertainment",
+              "Vaste gasten uit de buurt of stad",
+              "Feestdagen en jubilea vierders",
+              "Culinair geïnteresseerden"
+            ],
+            "bistro": [
+              "Buurtbewoners en vaste gasten",
+              "Koppels en kleine groepen",
+              "Zakelijk lunchpubliek",
+              "Families",
+              "Doorlopers en incidentele gasten"
+            ],
+            "brasserie": [
+              "Buurtbewoners en vaste gasten",
+              "Koppels en kleine groepen",
+              "Zakelijk lunchpubliek",
+              "Families",
+              "Doorlopers en incidentele gasten"
+            ],
+            "pannenkoeken": [
+              "Families met kinderen",
+              "Grootouders met kleinkinderen",
+              "Groepen en uitjes",
+              "Fietsers en wandelaars",
+              "Vaste buurtgasten"
+            ],
+            "cafe": [
+              "Buurtbewoners en stamgasten",
+              "Studenten en jongeren",
+              "Na werk borrelgangers",
+              "Weekendpubliek",
+              "Sportclubleden en verenigingen"
+            ],
+            "bar": [
+              "Cocktail en drankliefhebbers",
+              "After work en borrelgangers",
+              "Daters en koppels",
+              "Toeristen en bezoekers van de stad",
+              "Vaste gasten die de barman kennen"
+            ],
+            "wijnbar": [
+              "Cocktail en drankliefhebbers",
+              "After work en borrelgangers",
+              "Daters en koppels",
+              "Toeristen en bezoekers van de stad",
+              "Vaste gasten die de barman kennen"
+            ],
+            "lunchroom": [
+              "Thuiswerkers en laptoppers",
+              "Vriendinnen en sociale lunchers",
+              "Winkelende dagmensen",
+              "Buurtbewoners voor vaste koffie",
+              "Zakelijke lunchaafspraken"
+            ],
+            "koffiehuis": [
+              "Thuiswerkers en laptoppers",
+              "Vriendinnen en sociale lunchers",
+              "Winkelende dagmensen",
+              "Buurtbewoners voor vaste koffie",
+              "Zakelijke lunchaafspraken"
+            ],
+            "brunch": [
+              "Thuiswerkers en laptoppers",
+              "Vriendinnen en sociale lunchers",
+              "Winkelende dagmensen",
+              "Buurtbewoners voor vaste koffie",
+              "Zakelijke lunchaafspraken"
+            ],
+            "fast_casual": [
+              "Lunchende werknemers uit de buurt",
+              "Jongeren en studenten",
+              "Families die snel willen eten",
+              "Bezorgklanten thuis",
+              "Vaste snelle lunchgasten"
+            ],
+            "afhaal": [
+              "Lunchende werknemers uit de buurt",
+              "Jongeren en studenten",
+              "Families die snel willen eten",
+              "Bezorgklanten thuis",
+              "Vaste snelle lunchgasten"
+            ]
+          }
+        },
+        {
+          "id": "q3b",
+          "label": "Waarom komen gasten bij jullie en niet bij de concurrent?",
+          "type": "top3_select",
+          "required": true,
+          "maxSelect": 3,
+          "allowCustom": true,
+          "optionsByType": {
+            "gastronomisch": [
+              "De chef en zijn keukenfilosofie",
+              "Unieke smaakbeleving die nergens anders te vinden is",
+              "De totaalbeleving van de avond",
+              "Exclusiviteit en bijzonderheid",
+              "Internationale reputatie en erkenning"
+            ],
+            "fine_dining": [
+              "De kwaliteit van het eten",
+              "De beleving en het gevoel",
+              "De service en aandacht",
+              "De sfeer en het interieur",
+              "De wijnkaart"
+            ],
+            "bistro": [
+              "De kwaliteit voor de prijs",
+              "De sfeer en het gevoel thuis",
+              "De locatie en bereikbaarheid",
+              "De vaste kaart die ze kennen",
+              "Het team en de gastvrijheid"
+            ],
+            "brasserie": [
+              "De kwaliteit voor de prijs",
+              "De sfeer en het gevoel thuis",
+              "De locatie en bereikbaarheid",
+              "De vaste kaart die ze kennen",
+              "Het team en de gastvrijheid"
+            ],
+            "pannenkoeken": [
+              "De pannenkoeken zelf — het product",
+              "De gezelligheid en ruimte",
+              "De kindvriendelijkheid",
+              "De locatie in de natuur",
+              "De prijs voor een heel gezin"
+            ],
+            "cafe": [
+              "De sfeer en het gevoel",
+              "De mensen en de stamgasten",
+              "Het bier of drankenaanbod",
+              "De locatie en het terras",
+              "De muziek of het karakter"
+            ],
+            "bar": [
+              "De kwaliteit van de dranken",
+              "De kennis en het advies van de bar",
+              "De sfeer en het interieur",
+              "De signature cocktails",
+              "Het gevoel van een ontdekking"
+            ],
+            "wijnbar": [
+              "De kwaliteit van de dranken",
+              "De kennis en het advies van de bar",
+              "De sfeer en het interieur",
+              "De signature cocktails",
+              "Het gevoel van een ontdekking"
+            ],
+            "lunchroom": [
+              "De koffie en de kwaliteit ervan",
+              "De rustige werkplek sfeer",
+              "Het verse aanbod van de dag",
+              "De vriendelijkheid en herkenning",
+              "De locatie voor een tussenstop"
+            ],
+            "koffiehuis": [
+              "De koffie en de kwaliteit ervan",
+              "De rustige werkplek sfeer",
+              "Het verse aanbod van de dag",
+              "De vriendelijkheid en herkenning",
+              "De locatie voor een tussenstop"
+            ],
+            "brunch": [
+              "De koffie en de kwaliteit ervan",
+              "De rustige werkplek sfeer",
+              "Het verse aanbod van de dag",
+              "De vriendelijkheid en herkenning",
+              "De locatie voor een tussenstop"
+            ],
+            "fast_casual": [
+              "De snelheid en het gemak",
+              "De kwaliteit voor fastfood niveau",
+              "De prijs",
+              "De locatie op loopafstand",
+              "De vaste betrouwbaarheid"
+            ],
+            "afhaal": [
+              "De snelheid en het gemak",
+              "De kwaliteit voor fastfood niveau",
+              "De prijs",
+              "De locatie op loopafstand",
+              "De vaste betrouwbaarheid"
+            ]
+          }
+        },
+        {
+          "id": "q3c",
+          "label": "Wanneer bezoeken gasten jullie?",
+          "hint": "Vink aan wat van toepassing is — meerdere opties mogelijk.",
+          "type": "multi_select",
+          "required": true,
+          "options": [
+            "Lunch doordeweeks",
+            "Diner doordeweeks",
+            "Lunch weekend",
+            "Diner weekend",
+            "Zaterdagavond als hoogtepunt",
+            "Zondagse uitjes",
+            "Na het werk borrel",
+            "Speciale gelegenheden en feestdagen",
+            "Seizoensgebonden — vooral zomer",
+            "Seizoensgebonden — vooral winter",
+            "Doorlopend de hele dag"
+          ],
+          "allowCustom": true
+        }
+      ]
+    },
+
+    {
+      "id": "block4",
+      "title": "Jullie identiteit",
+      "subtitle": "Dit is de brief aan onze content creator. Neem even de tijd.",
+      "note": "Kies je top 3 — niet omdat de rest niet telt, maar dit helpt ons de juiste prioriteit te geven.",
+      "questions": [
+        {
+          "id": "q4a",
+          "label": "Wat is jullie grootste trots?",
+          "hint": "Kies je top 3 — in volgorde van belang.",
+          "type": "top3_select",
+          "required": true,
+          "maxSelect": 3,
+          "allowCustom": true,
+          "optionsByType": {
+            "gastronomisch": [
+              "De consistentie en precisie van onze keuken",
+              "De relatie met onze leveranciers en producenten",
+              "De ontwikkeling van onze chef door de jaren",
+              "Onze positie in de Nederlandse gastronomie",
+              "De gasten die speciaal voor ons komen"
+            ],
+            "fine_dining": [
+              "De kwaliteit van onze ingrediënten",
+              "De beleving die we gasten meegeven",
+              "Ons interieur en de sfeer die we creëren",
+              "De wijnkaart en onze sommelier",
+              "Het vaste team dat er al jaren staat"
+            ],
+            "bistro": [
+              "De eerlijke keuken zonder poespas",
+              "De sfeer die mensen doet ontspannen",
+              "De vaste gasten die vrienden zijn geworden",
+              "De kaart die we zelf samenstellen",
+              "Het team dat er elke dag voor staat"
+            ],
+            "brasserie": [
+              "De eerlijke keuken zonder poespas",
+              "De sfeer die mensen doet ontspannen",
+              "De vaste gasten die vrienden zijn geworden",
+              "De kaart die we zelf samenstellen",
+              "Het team dat er elke dag voor staat"
+            ],
+            "pannenkoeken": [
+              "Ons eigen recept dat we al jaren maken",
+              "De reacties van kinderen als het bord arriveert",
+              "De locatie die mensen doet ontspannen",
+              "De families die al generaties bij ons komen",
+              "Het gevoel van nostalgie dat we oproepen"
+            ],
+            "cafe": [
+              "De sfeer die mensen niet willen verlaten",
+              "De stamgasten die deel uitmaken van ons café",
+              "Onze bierselectie of drankenaanbod",
+              "Het karakter dat we door de jaren hebben opgebouwd",
+              "De buurtfunctie die we vervullen"
+            ],
+            "bar": [
+              "De kwaliteit en kennis achter onze bar",
+              "Onze signature cocktails of wijnkaart",
+              "De sfeer die we elke avond neerzetten",
+              "De gasten die terugkomen voor het advies",
+              "Ons team dat echt van dranken houdt"
+            ],
+            "wijnbar": [
+              "De kwaliteit en kennis achter onze bar",
+              "Onze signature cocktails of wijnkaart",
+              "De sfeer die we elke avond neerzetten",
+              "De gasten die terugkomen voor het advies",
+              "Ons team dat echt van dranken houdt"
+            ],
+            "lunchroom": [
+              "De kwaliteit van onze koffie",
+              "Het verse aanbod dat we dagelijks maken",
+              "De rustige sfeer die mensen opzoeken",
+              "De vaste gasten die elke dag terugkomen",
+              "Het kleine maar persoonlijke team"
+            ],
+            "koffiehuis": [
+              "De kwaliteit van onze koffie",
+              "Het verse aanbod dat we dagelijks maken",
+              "De rustige sfeer die mensen opzoeken",
+              "De vaste gasten die elke dag terugkomen",
+              "Het kleine maar persoonlijke team"
+            ],
+            "brunch": [
+              "De kwaliteit van onze koffie",
+              "Het verse aanbod dat we dagelijks maken",
+              "De rustige sfeer die mensen opzoeken",
+              "De vaste gasten die elke dag terugkomen",
+              "Het kleine maar persoonlijke team"
+            ],
+            "fast_casual": [
+              "De kwaliteit die we voor deze prijs leveren",
+              "De snelheid zonder in te leveren op smaak",
+              "De vaste recepten die altijd consistent zijn",
+              "Het gemak voor onze vaste lunchgasten",
+              "De eerlijke ingrediënten die we gebruiken"
+            ],
+            "afhaal": [
+              "De kwaliteit die we voor deze prijs leveren",
+              "De snelheid zonder in te leveren op smaak",
+              "De vaste recepten die altijd consistent zijn",
+              "Het gemak voor onze vaste lunchgasten",
+              "De eerlijke ingrediënten die we gebruiken"
+            ]
+          }
+        },
+        {
+          "id": "q4b",
+          "label": "Hoe willen jullie overkomen op social media?",
+          "hint": "Kies je top 3 uitstraling — dit stuurt de toon van alle content.",
+          "type": "top3_select",
+          "required": true,
+          "maxSelect": 3,
+          "allowCustom": true,
+          "optionsByType": {
+            "gastronomisch": [
+              "Toonaangevend en inspirerend",
+              "Ambachtelijk en puur",
+              "Internationaal en veelzijdig",
+              "Exclusief maar niet onbereikbaar",
+              "Vernieuwend en gedurfd"
+            ],
+            "fine_dining": [
+              "Warm en gastvrij maar serieus",
+              "Stijlvol zonder arrogant te zijn",
+              "Bijzonder en de moeite waard",
+              "Verfijnd en verzorgd",
+              "Lokaal geworteld maar culinair ambitieus"
+            ],
+            "bistro": [
+              "Gezellig en toegankelijk",
+              "Eerlijk en zonder gedoe",
+              "Professioneel maar ontspannen",
+              "Buurtgebonden en trouw",
+              "Lekker eten zonder poespas"
+            ],
+            "brasserie": [
+              "Gezellig en toegankelijk",
+              "Eerlijk en zonder gedoe",
+              "Professioneel maar ontspannen",
+              "Buurtgebonden en trouw",
+              "Lekker eten zonder poespas"
+            ],
+            "pannenkoeken": [
+              "Warm en nostalgisch",
+              "Familiair en uitnodigend",
+              "Vrolijk en energiek",
+              "Authentiek en ambachtelijk",
+              "Buiten en avontuurlijk"
+            ],
+            "cafe": [
+              "Authentiek en ongepolijst",
+              "Sociaal en verbindend",
+              "Bruisend en levendig",
+              "Rustig en een toevluchtsoord",
+              "Karaktervol en eigenzinnig"
+            ],
+            "bar": [
+              "Vakkundig en kennisgedreven",
+              "Sfeervol en intiem",
+              "Trendy maar niet oppervlakkig",
+              "Avontuurlijk en verrassend",
+              "Exclusief en curatief"
+            ],
+            "wijnbar": [
+              "Vakkundig en kennisgedreven",
+              "Sfeervol en intiem",
+              "Trendy maar niet oppervlakkig",
+              "Avontuurlijk en verrassend",
+              "Exclusief en curatief"
+            ],
+            "lunchroom": [
+              "Rustig en productief",
+              "Vers en bewust",
+              "Vriendelijk en herkenbaar",
+              "Kwaliteitsgericht zonder duur te zijn",
+              "Een plek om even bij te komen"
+            ],
+            "koffiehuis": [
+              "Rustig en productief",
+              "Vers en bewust",
+              "Vriendelijk en herkenbaar",
+              "Kwaliteitsgericht zonder duur te zijn",
+              "Een plek om even bij te komen"
+            ],
+            "brunch": [
+              "Rustig en productief",
+              "Vers en bewust",
+              "Vriendelijk en herkenbaar",
+              "Kwaliteitsgericht zonder duur te zijn",
+              "Een plek om even bij te komen"
+            ],
+            "fast_casual": [
+              "Snel en betrouwbaar",
+              "Eerlijk en transparant",
+              "Energiek en toegankelijk",
+              "Kwaliteit voor iedereen",
+              "Geen fratsen gewoon lekker"
+            ],
+            "afhaal": [
+              "Snel en betrouwbaar",
+              "Eerlijk en transparant",
+              "Energiek en toegankelijk",
+              "Kwaliteit voor iedereen",
+              "Geen fratsen gewoon lekker"
+            ]
+          }
+        },
+        {
+          "id": "q4c",
+          "label": "Vertel ons iets over jullie restaurant",
+          "hint": "Wat zeggen gasten als compliment? Is er een verhaal achter de zaak? Hoe lang zijn jullie er al? Dit zijn vaak de mooiste content-momenten. (optioneel)",
+          "subPrompts": [
+            "Wat horen jullie het vaakst van gasten?",
+            "Is er een verhaal achter het restaurant — de chef, de locatie, een traditie?"
+          ],
+          "type": "textarea",
+          "required": false,
+          "skippable": true,
+          "placeholder": "Schrijf vrijuit — dit is de brief aan onze content creator, niet een formulier.",
+          "toneByType": {
+            "gastronomisch": "Bijv: 'Dit was een onvergetelijke ervaring' of 'Elk bezoek is een ontdekking'",
+            "fine_dining": "Bijv: 'We komen zeker terug voor een bijzondere avond'",
+            "bistro": "Bijv: 'Hier voelen we ons altijd thuis'",
+            "brasserie": "Bijv: 'Hier voelen we ons altijd thuis'",
+            "pannenkoeken": "Bijv: 'Die pannenkoek was zo groot!' of 'Hier komen we elk jaar terug'",
+            "cafe": "Bijv: 'Dit is echt ons café'",
+            "bar": "Bijv: 'Die barman weet precies wat ik wil drinken'",
+            "wijnbar": "Bijv: 'Die barman weet precies wat ik wil drinken'",
+            "lunchroom": "Bijv: 'De lekkerste koffie van de buurt'",
+            "koffiehuis": "Bijv: 'De lekkerste koffie van de buurt'",
+            "brunch": "Bijv: 'Het beste ontbijt van de stad'",
+            "fast_casual": "Bijv: 'Altijd consistent en altijd lekker'",
+            "afhaal": "Bijv: 'Sneller en lekkerder dan thuisbezorgd'"
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "block5",
+      "title": "Content prioriteiten",
+      "subtitle": "Wat filmen we — en wat niet.",
+      "note": "Kies je top 3 — niet omdat de rest niet telt, maar dit helpt ons de juiste prioriteit te geven.",
+      "questions": [
+        {
+          "id": "q5a",
+          "label": "Wat willen jullie het liefst laten zien op social media?",
+          "hint": "Kies je top 3 — in volgorde van belang.",
+          "type": "top3_select",
+          "required": true,
+          "maxSelect": 3,
+          "allowCustom": true,
+          "optionsByType": {
+            "gastronomisch": [
+              "Plating en presentatie van gerechten",
+              "De chef aan het werk in de keuken",
+              "Seizoensproducten en leveranciers",
+              "Interieur en tafelsetting",
+              "Het team en de mensen achter het restaurant",
+              "Wijnparing en de sommelier",
+              "Behind the scenes van de mise en place",
+              "De gastbeleving en reacties"
+            ],
+            "fine_dining": [
+              "Gerechten en de presentatie",
+              "Het interieur en de sfeer",
+              "De wijnkaart en dranken",
+              "Het team en de service",
+              "Speciale avonden en arrangementen",
+              "Seizoensgebonden menuwisselingen",
+              "Kaars en tafeldecoratie sfeer"
+            ],
+            "bistro": [
+              "De gerechten van de dag",
+              "De sfeer en het terras",
+              "Het team achter de bar en keuken",
+              "De dagspecials en seizoenskaart",
+              "Interieur details en karakter",
+              "Drukke gezellige momenten",
+              "Borrel en aperitief cultuur"
+            ],
+            "brasserie": [
+              "De gerechten van de dag",
+              "De sfeer en het terras",
+              "Het team achter de bar en keuken",
+              "De dagspecials en seizoenskaart",
+              "Interieur details en karakter",
+              "Drukke gezellige momenten",
+              "Borrel en aperitief cultuur"
+            ],
+            "pannenkoeken": [
+              "De pannenkoeken zelf — het product",
+              "Families en kinderen aan tafel",
+              "De locatie en natuur eromheen",
+              "Seizoensspecials en bijzondere pannenkoeken",
+              "Het terras en buiten eten",
+              "Het team en de keuken",
+              "Speciale dagen en uitjes"
+            ],
+            "cafe": [
+              "De sfeer en het interieur",
+              "Het bier of drankenaanbod",
+              "Stamgasten en gezelligheid",
+              "Het terras en de buitenruimte",
+              "Speciale avonden en evenementen",
+              "Het team achter de tap",
+              "Seizoensaanbod en specials"
+            ],
+            "bar": [
+              "Signature cocktails en dranken",
+              "De barman aan het werk",
+              "Sfeer en interieur in avondlicht",
+              "Wijnflessen en detail shots",
+              "Gasten in de avondsfeer",
+              "Nieuw aanbod en seizoensdrankjes",
+              "Behind the scenes bereiding"
+            ],
+            "wijnbar": [
+              "Signature cocktails en dranken",
+              "De barman aan het werk",
+              "Sfeer en interieur in avondlicht",
+              "Wijnflessen en detail shots",
+              "Gasten in de avondsfeer",
+              "Nieuw aanbod en seizoensdrankjes",
+              "Behind the scenes bereiding"
+            ],
+            "lunchroom": [
+              "Koffie en de bereiding",
+              "Verse lunchgerechten en broodjes",
+              "De rustige sfeer overdag",
+              "Seizoensaanbod en dagspecials",
+              "Het team en de persoonlijkheid",
+              "Interieur en werkplek sfeer",
+              "Thuiswerkende gasten en sociale lunch"
+            ],
+            "koffiehuis": [
+              "Koffie en de bereiding",
+              "Verse lunchgerechten en broodjes",
+              "De rustige sfeer overdag",
+              "Seizoensaanbod en dagspecials",
+              "Het team en de persoonlijkheid",
+              "Interieur en werkplek sfeer",
+              "Thuiswerkende gasten en sociale lunch"
+            ],
+            "brunch": [
+              "Koffie en de bereiding",
+              "Verse lunchgerechten en broodjes",
+              "De rustige sfeer overdag",
+              "Seizoensaanbod en dagspecials",
+              "Het team en de persoonlijkheid",
+              "Interieur en werkplek sfeer",
+              "Thuiswerkende gasten en sociale lunch"
+            ],
+            "fast_casual": [
+              "Het hoofdproduct duidelijk en aantrekkelijk",
+              "De snelheid en het gemak",
+              "Verse ingrediënten en kwaliteit",
+              "Dagspecials en nieuwe items",
+              "Het team en de energie",
+              "Bezorging en afhaal momenten"
+            ],
+            "afhaal": [
+              "Het hoofdproduct duidelijk en aantrekkelijk",
+              "De snelheid en het gemak",
+              "Verse ingrediënten en kwaliteit",
+              "Dagspecials en nieuwe items",
+              "Het team en de energie",
+              "Bezorging en afhaal momenten"
+            ]
+          },
+          "subtagAdditions": {
+            "terras": [
+              "Terras in verschillende lichten (ochtend / middag / avond)",
+              "Eerste dag terras open in het jaar"
+            ],
+            "wijnspecialist": [
+              "Wijnkelder en selectie",
+              "Sommelier in actie"
+            ],
+            "familie": [
+              "Kinderhoek of speelruimte",
+              "Familiemomenten aan tafel"
+            ],
+            "kindvriendelijk": [
+              "Kinderhoek of speelruimte",
+              "Familiemomenten aan tafel"
+            ],
+            "livemuziek": [
+              "Muzikanten en sfeeravonden"
+            ],
+            "duurzaam": [
+              "Lokale leveranciers en producten",
+              "Seizoensgebonden inkoop"
+            ]
+          }
+        },
+        {
+          "id": "q5b",
+          "label": "Is er iets wat jullie liever NIET laten zien?",
+          "hint": "Denk aan: personeel dat liever niet gefilmd wordt, ruimtes die niet representatief zijn, onderwerpen die gevoelig liggen. (optioneel)",
+          "type": "textarea",
+          "required": false,
+          "skippable": true,
+          "placeholder": "Optioneel maar heel nuttig voor ons"
+        }
+      ]
+    },
+
+    {
+      "id": "block6",
+      "title": "Seizoenen en momenten",
+      "subtitle": "Dit vult de content kalender voor 52 weken.",
+      "note": "Kies je top 3 — niet omdat de rest niet telt, maar dit helpt ons de juiste prioriteit te geven.",
+      "questions": [
+        {
+          "id": "q6a",
+          "label": "Welke momenten in het jaar zijn cruciaal voor jullie zaak?",
+          "hint": "Kies je top 3 — in volgorde van belang.",
+          "type": "top3_select",
+          "required": true,
+          "maxSelect": 3,
+          "allowCustom": true,
+          "optionsByType": {
+            "gastronomisch": [
+              "Kerst en oud en nieuw",
+              "Valentijn",
+              "Pasen",
+              "Wisseling van het seizoensmenu",
+              "Nieuwe oogst en speciale producten",
+              "Reserveringspieken en wachtlijst momenten",
+              "Jubilea en bijzondere avonden van gasten"
+            ],
+            "fine_dining": [
+              "Kerst en feestdagen",
+              "Valentijn",
+              "Moederdag",
+              "Pasen",
+              "Nieuw menu lancering",
+              "Zomer arrangementen",
+              "Jubilea en speciale diners"
+            ],
+            "bistro": [
+              "Terras opening in het voorjaar",
+              "Zomer en lange avonden",
+              "Kerst en feestdagen",
+              "Valentijn",
+              "Nieuw seizoensmenu",
+              "Lokale evenementen in de buurt",
+              "Moederdag"
+            ],
+            "brasserie": [
+              "Terras opening in het voorjaar",
+              "Zomer en lange avonden",
+              "Kerst en feestdagen",
+              "Valentijn",
+              "Nieuw seizoensmenu",
+              "Lokale evenementen in de buurt",
+              "Moederdag"
+            ],
+            "pannenkoeken": [
+              "Zomer en terrasseizoen",
+              "Voorjaarsvakantie en meivakantie",
+              "Zomervakantie",
+              "Herfstvakantie",
+              "Kerstvakantie",
+              "Koningsdag en nationale feestdagen",
+              "Pasen en paasvakantie"
+            ],
+            "cafe": [
+              "Terras opening",
+              "Zomer en festivals",
+              "Oud en nieuw",
+              "Koningsdag",
+              "Lokale evenementen",
+              "WK en EK voetbal",
+              "Sinterklaas en kerst"
+            ],
+            "bar": [
+              "Nieuwe cocktailkaart lancering",
+              "Nieuwe wijnkaart seizoen",
+              "Valentijn",
+              "Kerst en oud en nieuw",
+              "Zomer en terrasseizoen",
+              "Speciale proefavonden en events",
+              "Halloween en thema avonden"
+            ],
+            "wijnbar": [
+              "Nieuwe cocktailkaart lancering",
+              "Nieuwe wijnkaart seizoen",
+              "Valentijn",
+              "Kerst en oud en nieuw",
+              "Zomer en terrasseizoen",
+              "Speciale proefavonden en events",
+              "Halloween en thema avonden"
+            ],
+            "lunchroom": [
+              "Zomer en terras",
+              "Back to school en werkhervatting",
+              "Kerst en decembermaand",
+              "Valentijn",
+              "Pasen en lentesfeer",
+              "Nieuw seizoensmenu of aanbod"
+            ],
+            "koffiehuis": [
+              "Zomer en terras",
+              "Back to school en werkhervatting",
+              "Kerst en decembermaand",
+              "Valentijn",
+              "Pasen en lentesfeer",
+              "Nieuw seizoensmenu of aanbod"
+            ],
+            "brunch": [
+              "Zomer en terras",
+              "Back to school en werkhervatting",
+              "Kerst en decembermaand",
+              "Valentijn",
+              "Pasen en lentesfeer",
+              "Nieuw seizoensmenu of aanbod"
+            ],
+            "fast_casual": [
+              "Lunch pieken doordeweeks",
+              "Zomer en buiteneten",
+              "Kerst en december",
+              "Back to school",
+              "Nieuwe items op de kaart",
+              "Lokale evenementen"
+            ],
+            "afhaal": [
+              "Lunch pieken doordeweeks",
+              "Zomer en buiteneten",
+              "Kerst en december",
+              "Back to school",
+              "Nieuwe items op de kaart",
+              "Lokale evenementen"
+            ]
+          }
+        },
+        {
+          "id": "q6b",
+          "label": "Wanneer zijn jullie het drukst en wanneer het rustigst?",
+          "hint": "Klik de maanden aan — druk of rustig. (optioneel)",
+          "type": "month_grid",
+          "required": false,
+          "skippable": true,
+          "months": [
+            "Jan", "Feb", "Mrt", "Apr", "Mei", "Jun",
+            "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"
+          ],
+          "states": ["druk", "rustig"]
+        },
+        {
+          "id": "q6c",
+          "label": "Hebben jullie jaarlijks terugkerende momenten die jullie eigen zijn?",
+          "hint": "Denk aan: een vaste leveranciersavond, een jaarlijks event, een traditie met vaste gasten. (optioneel)",
+          "type": "textarea",
+          "required": false,
+          "skippable": true,
+          "placeholder": "Bijv: elk jaar een pannenkoekenrace op de laatste dag van de zomervakantie"
+        }
+      ]
+    },
+
+    {
+      "id": "block7",
+      "title": "Huisstijl",
+      "subtitle": "Zodat uw video's herkenbaar zijn.",
+      "questions": [
+        {
+          "id": "q7a",
+          "label": "Hebben jullie een logo en huisstijl?",
+          "type": "single_select",
+          "required": true,
+          "options": [
+            {
+              "value": "ja",
+              "label": "Ja, wij hebben een huisstijl",
+              "triggersFollowUp": "q7b"
+            },
+            {
+              "value": "nee",
+              "label": "Nee of niet zeker",
+              "inlineNote": "Geen probleem. Wij bouwen een huisstijl op basis van jullie type en uitstraling. We bespreken dit tijdens de shoot."
+            }
+          ]
+        },
+        {
+          "id": "q7b",
+          "label": "Wie heeft jullie huisstijl bestanden?",
+          "type": "single_select",
+          "required": false,
+          "conditionalOn": "q7a",
+          "conditionalValue": "ja",
+          "options": [
+            {
+              "value": "zelf",
+              "label": "Ik heb ze zelf",
+              "inlineNote": "Stuur ze naar huisstijl@tripl3frame.nl\n\nWat we nodig hebben:\n→ Logo (vectorbestand of hoge resolutie PNG)\n→ Kleurcodes als je die hebt\n→ Eventueel font naam\n\nGeen vector? Stuur wat je hebt — wij regelen de rest."
+            },
+            {
+              "value": "vormgever",
+              "label": "Onze vormgever of bureau",
+              "triggersInput": {
+                "id": "vormgeverEmail",
+                "label": "Emailadres vormgever",
+                "type": "email",
+                "placeholder": "naam@bureau.nl"
+              }
+            },
+            {
+              "value": "websitebouwer",
+              "label": "Onze websitebouwer",
+              "triggersInput": {
+                "id": "websitebouwerEmail",
+                "label": "Emailadres websitebouwer",
+                "type": "email",
+                "placeholder": "naam@bureau.nl"
+              }
+            },
+            {
+              "value": "weet_niet",
+              "label": "Ik weet het niet",
+              "triggersInput": {
+                "id": "websiteVoorKleuren",
+                "label": "Jullie websiteadres",
+                "type": "url",
+                "placeholder": "www.jullierestarant.nl",
+                "inlineNote": "Geen probleem — wij pikken de kleuren en het font eruit."
+              }
+            }
+          ]
+        },
+        {
+          "id": "q7c",
+          "label": "Zijn er restaurants of merken waarvan jullie de visuele stijl bewonderen?",
+          "type": "textarea",
+          "required": false,
+          "skippable": true,
+          "placeholder": "Optioneel — vrij invullen"
+        }
+      ]
+    },
+
+    {
+      "id": "block8",
+      "title": "Praktisch",
+      "subtitle": "Bijna klaar. Alleen nog de planning.",
+      "questions": [
+        {
+          "id": "q8a",
+          "label": "Op welke dag en tijdstip wil je je wekelijkse video ontvangen via WhatsApp?",
+          "type": "day_time_select",
+          "required": true,
+          "hint": "Veel restaurants posten graag op donderdag of vrijdag voor het weekend. Maar kies wat voor jullie het beste werkt.",
+          "days": [
+            "Maandag", "Dinsdag", "Woensdag", "Donderdag",
+            "Vrijdag", "Zaterdag", "Zondag"
+          ],
+          "times": [
+            { "value": "08:00", "label": "08:00 — Voor de ochtendspits" },
+            { "value": "10:00", "label": "10:00 — Rustig moment voor de lunch" },
+            { "value": "12:00", "label": "12:00 — Lunchpiek" },
+            { "value": "15:00", "label": "15:00 — Rustig middagmoment" },
+            { "value": "17:00", "label": "17:00 — Voor de avonddrukte" },
+            { "value": "19:00", "label": "19:00 — Vroege avond" }
+          ]
+        },
+        {
+          "id": "q8b",
+          "label": "Tweede video — kies dag en tijdstip",
+          "type": "day_time_select",
+          "required": false,
+          "conditionalOn": "addon_twee_videos",
+          "note": "Jullie ontvangen twee video's per week. Kies een tweede dag — de eerste dag is al bezet.",
+          "days": [
+            "Maandag", "Dinsdag", "Woensdag", "Donderdag",
+            "Vrijdag", "Zaterdag", "Zondag"
+          ],
+          "times": [
+            { "value": "08:00", "label": "08:00 — Voor de ochtendspits" },
+            { "value": "10:00", "label": "10:00 — Rustig moment voor de lunch" },
+            { "value": "12:00", "label": "12:00 — Lunchpiek" },
+            { "value": "15:00", "label": "15:00 — Rustig middagmoment" },
+            { "value": "17:00", "label": "17:00 — Voor de avonddrukte" },
+            { "value": "19:00", "label": "19:00 — Vroege avond" }
+          ]
+        },
+        {
+          "id": "q8c",
+          "label": "Wanneer kunnen wij langskomen voor de shoot?",
+          "type": "date_picker_multi",
+          "required": true,
+          "count": 3,
+          "labels": ["Voorkeur 1", "Voorkeur 2", "Voorkeur 3"],
+          "hint": "Kies een dag waarop jullie open zijn. Idealiter een rustig moment, overdag voor het mooiste licht.",
+          "notesField": {
+            "label": "Is er iets bijzonders op die dag?",
+            "placeholder": "Bijv: woensdagmiddag is rustig of chef is er alleen op dinsdag",
+            "required": false
+          }
+        },
+        {
+          "id": "q8d",
+          "label": "Nog iets wat we moeten weten?",
+          "type": "textarea",
+          "required": false,
+          "skippable": true,
+          "placeholder": "Bijzonderheden, specifieke wensen, of iets wat je eerder niet kwijt kon."
+        }
+      ]
+    }
+  ],
+
+  "confirmation": {
+    "title": "Bedankt {contactName}!",
+    "subtitle": "Wij hebben alles ontvangen van {restaurantName}.",
+    "summaryFields": ["restaurantType", "postDay", "postTime", "shootDate1"],
+    "nextSteps": [
+      {
+        "id": "step1",
+        "text": "Jeffrey neemt binnen 24 uur contact op om de shootdatum te bevestigen"
+      },
+      {
+        "id": "step2",
+        "text": "Stuur je huisstijl bestanden naar huisstijl@tripl3frame.nl",
+        "conditionalOn": "huisstijl_actie_vereist"
+      },
+      {
+        "id": "step3",
+        "text": "Na de shoot bouwen wij jullie template en content kalender"
+      },
+      {
+        "id": "step4",
+        "text": "Dan gaat het systeem draaien — elke {postDay} om {postTime} een video in jullie WhatsApp"
+      }
+    ],
+    "contact": {
+      "label": "Vragen? App ons op",
+      "whatsapp": "[Tripl3Frame WhatsApp nummer]"
+    }
+  },
+
+  "emailNotification": {
+    "to": "jeffrey@tripl3frame.nl",
+    "subject": "Nieuwe onboarding: {restaurantName}",
+    "fields": [
+      "restaurantName",
+      "contactName",
+      "whatsapp",
+      "address",
+      "restaurantType",
+      "subtags",
+      "shootDates",
+      "postSchedule",
+      "huisstijlActie"
+    ]
+  },
+
+  "progressSteps": [
+    { "id": "block1", "label": "Basis" },
+    { "id": "block2", "label": "Type" },
+    { "id": "block3", "label": "Gasten" },
+    { "id": "block4", "label": "Identiteit" },
+    { "id": "block5", "label": "Content" },
+    { "id": "block6", "label": "Seizoenen" },
+    { "id": "block7", "label": "Huisstijl" },
+    { "id": "block8", "label": "Planning" }
+  ]
+}

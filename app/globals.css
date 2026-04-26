@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Questrial&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Questrial', sans-serif;
+  background: #EBEBEB;
+}
+
+/* Mobile progress bar */
+@media (max-width: 640px) {
+  .progress-desktop {
+    display: none !important;
+  }
+  .progress-mobile {
+    display: flex !important;
+  }
+}
