@@ -21,7 +21,7 @@ const wizardConfig = wizardConfigRaw as unknown as WizardConfig;
 import {
   WC, ProgressBar, BlockHeader, SectionLabel, TextInput,
   SingleSelectCards, Top3Select, MultiSelectCards,
-  TextareaField, MonthGrid, DayTimeSelect, DatePickerMulti,
+  TextareaField, MonthGrid, MomentMatrix, SlotPicker, DayTimeSelect, DatePickerMulti,
   GuardrailModal, InlineNote, Divider,
 } from './WizardComponents';
 
@@ -436,13 +436,14 @@ function Block6({ data, onNext, onPrev, rType }: {
 }) {
   const { control, handleSubmit, formState: { errors } } = useForm<Block6Data>({
     resolver: zodResolver(block6Schema),
-    defaultValues: { q6a: data.q6a, q6b: data.q6b, q6c: data.q6c },
+    defaultValues: { q6a: data.q6a, q6b: data.q6b, q6a2: data.q6a2, q6c: data.q6c },
   });
 
   const b = cfg.blocks[5];
   const q6a = b.questions![0];
   const q6b = b.questions![1];
-  const q6c = b.questions![2];
+  const q6a2Config = b.questions![2];
+  const q6c = b.questions![3];
 
   const firstError = errors.q6a?.message;
 
@@ -472,6 +473,26 @@ function Block6({ data, onNext, onPrev, rType }: {
             onChange={field.onChange}
           />
         )}
+      />
+
+      <Divider />
+
+      <SectionLabel label={q6a2Config.label} />
+      <Controller
+        name="q6a2"
+        control={control}
+        render={({ field }) => {
+          const momentsByType = (q6a2Config as unknown as { momentsByType: Record<string, string[]> }).momentsByType;
+          const moments = momentsByType[rType] || momentsByType['bistro'] || [];
+          return (
+            <MomentMatrix
+              moments={moments}
+              value={(field.value as Record<string, 'ja' | 'nee'>) || {}}
+              onChange={field.onChange}
+              skipLabel={(q6a2Config as unknown as { skipLabel?: string }).skipLabel}
+            />
+          );
+        }}
       />
 
       <Divider />
@@ -594,24 +615,21 @@ function Block8({ data, onNext, onPrev, isSubmitting }: {
     resolver: zodResolver(block8Schema),
     defaultValues: {
       q8a: data.q8a,
-      q8c_days: data.q8c_days,
-      q8c_dagdeel: data.q8c_dagdeel ?? undefined,
+      q8c_slots: data.q8c_slots,
       q8c_notes: data.q8c_notes,
     },
   });
 
   const b = cfg.blocks[7];
   const q8aConfig = b.questions![0];
-  const q8cDaysConfig = b.questions![2];
-  const q8cDagdeelConfig = b.questions![3];
-  const q8cNotesConfig = b.questions![4];
+  const q8cSlotsConfig = b.questions![2];
+  const q8cNotesConfig = b.questions![3];
 
   const q8aError = (errors.q8a as { message?: string })?.message
     || (errors.q8a as { day?: { message?: string } })?.day?.message
     || (errors.q8a as { time?: { message?: string } })?.time?.message;
   const firstError = q8aError
-    || errors.q8c_days?.message
-    || (errors.q8c_dagdeel as { message?: string })?.message;
+    || (errors.q8c_slots as { message?: string } | undefined)?.message;
 
   return (
     <form onSubmit={handleSubmit(d => onNext(d))} noValidate>
@@ -633,33 +651,34 @@ function Block8({ data, onNext, onPrev, isSubmitting }: {
 
       <Divider />
 
-      <SectionLabel label={q8cDaysConfig.label} required />
+      <SectionLabel label={q8cSlotsConfig.label} hint={q8cSlotsConfig.hint} required />
       <Controller
-        name="q8c_days"
+        name="q8c_slots"
         control={control}
-        render={({ field }) => (
-          <MultiSelectCards
-            options={q8cDaysConfig.options as string[]}
-            value={field.value}
-            onChange={field.onChange}
-          />
-        )}
+        render={({ field }) => {
+          const slotCfg = q8cSlotsConfig as unknown as {
+            days: string[]; tijdblokken: string[]; maxSlots: number;
+          };
+          return (
+            <SlotPicker
+              value={field.value as Array<{ dag: string; tijdblok: string }>}
+              onChange={field.onChange}
+              days={slotCfg.days}
+              tijdblokken={slotCfg.tijdblokken}
+              maxSlots={slotCfg.maxSlots}
+            />
+          );
+        }}
       />
-
-      <Divider />
-
-      <SectionLabel label={q8cDagdeelConfig.label} required />
-      <Controller
-        name="q8c_dagdeel"
-        control={control}
-        render={({ field }) => (
-          <SingleSelectCards
-            options={q8cDagdeelConfig.options as OptionConfig[]}
-            value={field.value ?? null}
-            onChange={field.onChange}
-          />
-        )}
-      />
+      <p style={{
+        fontSize: '13px', color: WC.terra, fontStyle: 'italic',
+        lineHeight: 1.8, margin: '18px 0 0',
+      }}>
+        Wij belemmeren nooit het restaurantbezoek. Gasten komen nooit herkenbaar in beeld.<br />
+        Voor sfeer en restaurant gezelligheid werken we met AI personages ivm privacy.<br />
+        Voor de mooiste beelden werken wij bij voorkeur in een rustig moment.<br />
+Worden er gerechten gefilmd? Zorg dan dat deze beschikbaar zijn tijdens de shoot.
+      </p>
 
       <Divider />
 
@@ -692,11 +711,9 @@ function Confirmation({ data }: { data: WizardFormData }) {
   };
   const postDay = dayLabels[data.q8a.day ?? ''] || '—';
   const postTime = data.q8a.time || '—';
-  const dagdeelLabels: Record<string, string> = { middag: 'Middag', avond: 'Avond', middag_avond: 'Middag + Avond' };
-  const shootSummary = [
-    data.q8c_days.join(', ') || '—',
-    data.q8c_dagdeel ? `· ${dagdeelLabels[data.q8c_dagdeel] ?? data.q8c_dagdeel}` : '',
-  ].filter(Boolean).join(' ');
+  const shootSummary = data.q8c_slots.length > 0
+    ? data.q8c_slots.map((s, i) => `${i + 1}. ${s.dag} · ${s.tijdblok}`).join('  ')
+    : '—';
   const huisstijlActie = data.q7a === 'ja' && data.q7b === 'zelf';
 
   const steps = [

@@ -349,6 +349,7 @@ export function MultiSelectCards({ options, value, onChange, maxSelect }: {
       {options.map(opt => {
         const label = typeof opt === 'string' ? opt : opt.label;
         const v = typeof opt === 'string' ? opt : opt.value;
+        const description = typeof opt === 'string' ? undefined : (opt as OptionConfig).description;
         const sel = value.includes(v);
         const disabled = !sel && !!maxSelect && value.length >= maxSelect;
         return (
@@ -356,14 +357,16 @@ export function MultiSelectCards({ options, value, onChange, maxSelect }: {
             key={v}
             onClick={() => !disabled && toggle(v)}
             style={{
-              padding: '10px 16px', borderRadius: '6px', cursor: disabled ? 'default' : 'pointer',
+              padding: description ? '12px 16px' : '10px 16px',
+              borderRadius: '6px', cursor: disabled ? 'default' : 'pointer',
               border: `1.5px solid ${sel ? WC.green : disabled ? '#eee' : WC.border}`,
               background: sel ? WC.greenLight : disabled ? '#fafafa' : WC.white,
-              fontSize: '14px', color: sel ? WC.green : disabled ? '#ccc' : WC.textPrimary,
-              fontWeight: sel ? '500' : '400', opacity: disabled ? 0.5 : 1,
-              transition: 'all 0.15s',
+              opacity: disabled ? 0.5 : 1, transition: 'all 0.15s',
             }}
-          >{label}</div>
+          >
+            <div style={{ fontSize: '14px', color: sel ? WC.green : disabled ? '#ccc' : WC.textPrimary, fontWeight: sel ? '500' : '400' }}>{label}</div>
+            {description && <div style={{ fontSize: '12px', color: sel ? WC.green : WC.textMuted, marginTop: '3px' }}>{description}</div>}
+          </div>
         );
       })}
     </div>
@@ -484,7 +487,7 @@ export function DayTimeSelect({ days, times, value, onChange }: {
         })}
       </div>
       <p style={{ fontSize: '11px', color: WC.textMuted, margin: '0 0 10px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Tijdstip</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '7px' }}>
         {times.map(t => {
           const sel = value.time === t.value;
           return (
@@ -492,24 +495,14 @@ export function DayTimeSelect({ days, times, value, onChange }: {
               key={t.value}
               onClick={() => onChange({ ...value, time: t.value })}
               style={{
-                padding: '12px 16px', borderRadius: '6px', cursor: 'pointer',
+                padding: '10px 4px', borderRadius: '6px', cursor: 'pointer',
                 border: `1.5px solid ${sel ? WC.green : WC.border}`,
-                background: sel ? WC.greenLight : WC.white,
-                display: 'flex', alignItems: 'center', gap: '12px',
-                transition: 'all 0.15s',
+                background: sel ? WC.green : WC.white,
+                color: sel ? WC.white : WC.textPrimary,
+                fontSize: '14px', fontWeight: sel ? '500' : '400',
+                textAlign: 'center', transition: 'all 0.15s',
               }}
-            >
-              <div style={{
-                width: '17px', height: '17px', borderRadius: '50%', flexShrink: 0,
-                border: `2px solid ${sel ? WC.green : '#ccc'}`,
-                background: sel ? WC.green : 'transparent',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.15s',
-              }}>
-                {sel && <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: WC.white }} />}
-              </div>
-              <span style={{ fontSize: '14px', color: sel ? WC.green : WC.textPrimary, fontWeight: sel ? '500' : '400' }}>{t.label}</span>
-            </div>
+            >{t.label}</div>
           );
         })}
       </div>
@@ -565,6 +558,243 @@ export function DatePickerMulti({ count, labels, hint, notesField, value, onChan
             onFocus={e => (e.target.style.borderColor = WC.green)}
             onBlur={e => (e.target.style.borderColor = WC.border)}
           />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── SlotPicker ──────────────────────────────────────────────────
+
+export function SlotPicker({ value, onChange, days, tijdblokken, maxSlots = 3 }: {
+  value: Array<{ dag: string; tijdblok: string }>;
+  onChange: (v: Array<{ dag: string; tijdblok: string }>) => void;
+  days: string[];
+  tijdblokken: string[];
+  maxSlots?: number;
+}) {
+  const add = () => {
+    if (value.length >= maxSlots) return;
+    onChange([...value, { dag: '', tijdblok: '' }]);
+  };
+
+  const remove = (i: number) => onChange(value.filter((_, idx) => idx !== i));
+
+  const update = (i: number, field: 'dag' | 'tijdblok', val: string) => {
+    const next = [...value];
+    next[i] = { ...next[i], [field]: val };
+    onChange(next);
+  };
+
+  const selectStyle: React.CSSProperties = {
+    flex: 1, padding: '11px 12px', fontSize: '14px',
+    border: `1.5px solid ${WC.border}`, borderRadius: '7px',
+    background: WC.white, color: WC.textPrimary,
+    fontFamily: 'Questrial, sans-serif', outline: 'none', cursor: 'pointer',
+    appearance: 'auto',
+  };
+
+  return (
+    <div>
+      {value.map((slot, i) => (
+        <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+          <div style={{
+            width: '26px', height: '26px', borderRadius: '50%', flexShrink: 0,
+            background: WC.terra, color: WC.white,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '12px', fontWeight: '600',
+          }}>{i + 1}</div>
+
+          <select value={slot.dag} onChange={e => update(i, 'dag', e.target.value)} style={selectStyle}>
+            <option value="">Kies een dag…</option>
+            {days.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+
+          <select value={slot.tijdblok} onChange={e => update(i, 'tijdblok', e.target.value)} style={{ ...selectStyle, flex: 1.6 }}>
+            <option value="">Kies een tijdblok…</option>
+            {tijdblokken.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+
+          <button
+            type="button"
+            onClick={() => remove(i)}
+            style={{
+              width: '30px', height: '30px', flexShrink: 0, border: 'none',
+              background: 'transparent', cursor: 'pointer', color: '#aaa',
+              fontSize: '20px', lineHeight: 1, borderRadius: '5px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >×</button>
+        </div>
+      ))}
+
+      {value.length < maxSlots && (
+        <button
+          type="button"
+          onClick={add}
+          style={{
+            marginTop: value.length > 0 ? '6px' : '0',
+            padding: '10px 18px',
+            background: 'transparent', color: WC.green,
+            border: `1.5px solid ${WC.green}`, borderRadius: '7px',
+            fontSize: '14px', cursor: 'pointer',
+            fontFamily: 'Questrial, sans-serif', fontWeight: '500',
+          }}
+        >+ Voeg optie toe</button>
+      )}
+    </div>
+  );
+}
+
+// ─── MomentMatrix ────────────────────────────────────────────────
+
+export function MomentMatrix({ moments, value, onChange, skipLabel }: {
+  moments: string[];
+  value: Record<string, 'ja' | 'nee'>;
+  onChange: (v: Record<string, 'ja' | 'nee'>) => void;
+  skipLabel?: string;
+}) {
+  const [tooltip, setTooltip] = useState<'ja' | 'nee' | null>(null);
+  const [skipped, setSkipped] = useState<boolean>(false);
+
+  const JA_TOOLTIP = 'Wij zetten een standaard video klaar en sturen je een reminder. Je kunt dan altijd nog een custom video aanvragen.';
+  const NEE_TOOLTIP = 'Wij slaan dit moment over. Je ontvangt geen reminder en er wordt geen video klaargezet.';
+
+  const select = (moment: string, col: 'ja' | 'nee') => {
+    if (skipped) return;
+    const next = { ...value };
+    if (next[moment] === col) {
+      delete next[moment];
+    } else {
+      next[moment] = col;
+    }
+    onChange(next);
+  };
+
+  const handleSkip = () => {
+    const nowSkipping = !skipped;
+    setSkipped(nowSkipping);
+    if (nowSkipping) onChange({});
+  };
+
+  return (
+    <div>
+      {/* Intro */}
+      <div style={{
+        fontSize: '13px', color: WC.terra, fontStyle: 'italic',
+        marginBottom: '20px', lineHeight: 1.7,
+        borderLeft: `3px solid ${WC.terra}`, paddingLeft: '12px',
+      }}>
+        Geef aan welke momenten voor jullie relevant zijn.<br />
+        Geen actie vereist — dit helpt ons om op het juiste moment de juiste video klaar te zetten.<br />
+        <br />
+        Bij elk moment dat je aanvinkt:<br />
+        → Maken wij automatisch een standaard video klaar<br />
+        → Ontvang je 3 weken van tevoren een reminder<br />
+        → Kun je dan aangeven of je een custom video wilt met eigen tekst of aankondiging
+      </div>
+
+      {/* Table */}
+      <div style={{ border: `1.5px solid ${WC.border}`, borderRadius: '8px', overflow: 'hidden' }}>
+        {/* Header */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: '1fr 90px 90px',
+          background: '#f5f5f5', borderBottom: `1.5px solid ${WC.border}`,
+          padding: '10px 16px',
+        }}>
+          <div style={{ fontSize: '11px', fontWeight: '600', color: WC.textMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Moment
+          </div>
+          {(['ja', 'nee'] as const).map(col => (
+            <div key={col} style={{ textAlign: 'center', position: 'relative' }}>
+              <span
+                onMouseEnter={() => setTooltip(col)}
+                onMouseLeave={() => setTooltip(null)}
+                style={{
+                  fontSize: '11px', fontWeight: '600', color: WC.textMuted,
+                  textTransform: 'uppercase', letterSpacing: '0.05em',
+                  cursor: 'help', borderBottom: '1px dashed #ccc', display: 'inline-flex',
+                  alignItems: 'center', gap: '4px',
+                }}
+              >
+                {col === 'ja' ? 'Ja' : 'Nee'}
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <circle cx="6" cy="6" r="5.25" stroke="#aaa" strokeWidth="1.5" />
+                  <path d="M6 5.25v3M6 3.75v.75" stroke="#aaa" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </span>
+              {tooltip === col && (
+                <div style={{
+                  position: 'absolute', bottom: 'calc(100% + 6px)',
+                  left: '50%', transform: 'translateX(-50%)',
+                  background: '#1a1a1a', color: '#fff', fontSize: '12px', lineHeight: 1.5,
+                  padding: '8px 12px', borderRadius: '6px', width: '200px',
+                  zIndex: 20, textAlign: 'left', pointerEvents: 'none',
+                }}>
+                  {col === 'ja' ? JA_TOOLTIP : NEE_TOOLTIP}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Rows */}
+        {moments.map((moment, i) => {
+          const selected = value[moment];
+          return (
+            <div
+              key={moment}
+              style={{
+                display: 'grid', gridTemplateColumns: '1fr 90px 90px',
+                padding: '11px 16px',
+                background: i % 2 === 0 ? WC.white : '#fafafa',
+                borderBottom: i < moments.length - 1 ? `1px solid #f0f0f0` : 'none',
+                opacity: skipped ? 0.35 : 1,
+                transition: 'opacity 0.15s',
+              }}
+            >
+              <div style={{ fontSize: '14px', color: WC.textPrimary, alignSelf: 'center' }}>{moment}</div>
+              {(['ja', 'nee'] as const).map(col => {
+                const isSelected = selected === col;
+                const accent = col === 'ja' ? WC.green : '#777';
+                return (
+                  <div key={col} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div
+                      onClick={() => select(moment, col)}
+                      style={{
+                        width: '20px', height: '20px', borderRadius: '50%',
+                        border: `2px solid ${isSelected ? accent : '#ccc'}`,
+                        background: isSelected ? accent : 'transparent',
+                        cursor: skipped ? 'default' : 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'all 0.15s', flexShrink: 0,
+                      }}
+                    >
+                      {isSelected && (
+                        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: WC.white }} />
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Skip */}
+      {skipLabel && (
+        <div
+          onClick={handleSkip}
+          style={{
+            marginTop: '14px', textAlign: 'center', fontSize: '13px',
+            color: skipped ? WC.terra : WC.textLight,
+            cursor: 'pointer',
+            textDecoration: skipped ? 'none' : 'underline',
+            fontStyle: 'italic',
+          }}
+        >
+          {skipped ? '↩ Toch invullen' : skipLabel}
         </div>
       )}
     </div>

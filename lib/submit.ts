@@ -31,8 +31,9 @@ function formatShootDate(d: string): string {
 
 export function buildJeffreyEmail(data: WizardFormData): string {
   const typeLabel = TYPE_LABELS[data.step2b ?? ''] ?? data.step2b ?? '—';
-  const dagdeelLabels: Record<string, string> = { middag: 'Middag', avond: 'Avond', middag_avond: 'Middag + Avond' };
-  const shootDagdeel = data.q8c_dagdeel ? dagdeelLabels[data.q8c_dagdeel] ?? data.q8c_dagdeel : '—';
+  const shootSlots = data.q8c_slots.length > 0
+    ? data.q8c_slots.map((s, i) => `${i + 1}. ${s.dag} · ${s.tijdblok}`).join('<br>')
+    : '—';
 
   const huisstijlValue = (() => {
     if (data.q7a === 'nee') return 'Nee / niet zeker';
@@ -103,8 +104,7 @@ export function buildJeffreyEmail(data: WizardFormData): string {
 
       ${section('Planning', [
         fmt('Postdag & tijdstip', `${data.q8a.day ?? '—'} om ${data.q8a.time ?? '—'}`),
-        fmt('Shoot voorkeursdagen', data.q8c_days.join(', ') || '—'),
-        fmt('Shoot dagdeel', shootDagdeel),
+        fmt('Shoot voorkeursmomenten', shootSlots),
         data.q8c_notes ? fmt('Bijzonderheden shoot', data.q8c_notes) : '',
       ].join(''))}
 
@@ -120,11 +120,9 @@ export function buildJeffreyEmail(data: WizardFormData): string {
 export function buildHuisstijlEmail(data: WizardFormData): string {
   const designerEmail = data.q7bInputVal || '(niet ingevuld)';
   const source = data.q7b === 'vormgever' ? 'vormgever/bureau' : 'websitebouwer';
-  const dagdeelLabelsH: Record<string, string> = { middag: 'Middag', avond: 'Avond', middag_avond: 'Middag + Avond' };
-  const shootInfo = [
-    data.q8c_days.join(', ') || '—',
-    data.q8c_dagdeel ? `(${dagdeelLabelsH[data.q8c_dagdeel] ?? data.q8c_dagdeel})` : '',
-  ].filter(Boolean).join(' ');
+  const shootInfo = data.q8c_slots.length > 0
+    ? data.q8c_slots.map((s, i) => `${i + 1}. ${s.dag} · ${s.tijdblok}`).join(', ')
+    : '—';
 
   return `<!DOCTYPE html>
 <html lang="nl">
@@ -209,6 +207,21 @@ export function generateOnboardingMarkdown(data: WizardFormData): string {
   }
   if (data.q6c) q('Hebben jullie jaarlijks terugkerende momenten die jullie eigen zijn?', data.q6c);
 
+  if (data.q6a2 && Object.keys(data.q6a2).length > 0) {
+    lines.push(`\n## Feestdagen en speciale momenten`);
+    lines.push(`\n**Relevant voor dit restaurant:**`);
+    const ja = Object.entries(data.q6a2).filter(([, v]) => v === 'ja').map(([k]) => k);
+    const nee = Object.entries(data.q6a2).filter(([, v]) => v === 'nee').map(([k]) => k);
+    if (ja.length > 0) {
+      lines.push(`\nJa — standaard video + reminder:`);
+      ja.forEach(m => lines.push(`- ${m}`));
+    }
+    if (nee.length > 0) {
+      lines.push(`\nNee — wordt overgeslagen:`);
+      nee.forEach(m => lines.push(`- ${m}`));
+    }
+  }
+
   lines.push(`\n## Huisstijl`);
   q('Hebben jullie een logo en huisstijl?', data.q7a === 'ja' ? 'Ja' : 'Nee / niet zeker');
   if (data.q7a === 'ja') {
@@ -224,10 +237,9 @@ export function generateOnboardingMarkdown(data: WizardFormData): string {
 
   lines.push(`\n## Planning`);
   q('Op welke dag en tijdstip wil je je wekelijkse video ontvangen via WhatsApp?', `${data.q8a.day ?? '—'} om ${data.q8a.time ?? '—'}`);
-  q('Welke dagen van de week kunnen wij het beste langskomen?', data.q8c_days.join(', ') || '—');
-  if (data.q8c_dagdeel) {
-    const dagdeelLabels: Record<string, string> = { middag: 'Middag', avond: 'Avond', middag_avond: 'Middag + Avond' };
-    q('Welk dagdeel past het beste?', dagdeelLabels[data.q8c_dagdeel] ?? data.q8c_dagdeel);
+  if (data.q8c_slots.length > 0) {
+    const slotLines = data.q8c_slots.map((s, i) => `${i + 1}. ${s.dag} · ${s.tijdblok}`).join('\n');
+    q('Voorkeursmomenten shoot', slotLines);
   }
   if (data.q8c_notes) q('Is er iets wat we moeten weten voordat we beginnen?', data.q8c_notes);
 
